@@ -1,0 +1,47 @@
+{
+  "name": "trading-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "shared"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:backend": "npm run build --workspace backend",
+    "build:frontend": "npm run build --workspace frontend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "test:backend": "npm run test --workspace backend",
+    "test:frontend": "npm run test --workspace frontend",
+    "test": "npm run test:backend && npm run test:frontend",
+    "lint": "npm run lint:backend && npm run lint:shared && npm run lint:frontend",
+    "lint:backend": "eslint backend/src",
+    "lint:shared": "eslint shared/src",
+    "lint:frontend": "npm run lint --workspace frontend",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@eslint/js": "^9.39.1",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.39.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.7.4",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.48.1"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "eslint-config-next": "^16.0.7"
+  }
+}

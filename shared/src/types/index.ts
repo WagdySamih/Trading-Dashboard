@@ -1,0 +1,55 @@
+export interface Ticker {
+  id: string;
+  symbol: string;
+  name: string;
+  currentPrice: number;
+  change: number;
+  changePercent: number;
+  volume: number;
+  lastUpdate: Date;
+}
+
+export interface PriceUpdate {
+  tickerId: string;
+  price: number;
+  timestamp: Date;
+  change: number;
+  changePercent: number;
+}
+
+export interface HistoricalDataPoint {
+  timestamp: Date;
+  price: number;
+  volume?: number;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export enum WsMessageType {
+  SUBSCRIBE = "SUBSCRIBE",
+  UNSUBSCRIBE = "UNSUBSCRIBE",
+  PRICE_UPDATE = "PRICE_UPDATE",
+  ERROR = "ERROR",
+}
+
+export interface WsMessage {
+  type: WsMessageType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload: any;
+}
+
+export interface SubscribeMessage extends WsMessage {
+  type: WsMessageType.SUBSCRIBE;
+  payload: {
+    tickerIds: string[];
+  };
+}
+
+export interface PriceUpdateMessage extends WsMessage {
+  type: WsMessageType.PRICE_UPDATE;
+  payload: PriceUpdate;
+}
