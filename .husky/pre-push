@@ -1,5 +1,8 @@
-# .husky/pre-push
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-npm run build
+echo "🧪 Running tests..."
+npm run test --workspace=backend
+
+echo "🔨 Building projects..."
+npm run build --workspaces --if-present
