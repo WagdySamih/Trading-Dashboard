@@ -6,3 +6,4 @@ export * from "./TickerCard";
 export * from "./OptionGroup";
 export * from "./PriceChart";
 export * from "./PriceChartPanel";
+export * from "./StatusIndicator";

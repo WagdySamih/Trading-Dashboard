@@ -1,0 +1,87 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &.success {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+
+    .icon {
+      animation: pulse 2s ease-in-out infinite;
+    }
+  }
+
+  &.warning {
+    background-color: rgba(251, 191, 36, 0.1);
+    color: #fbbf24;
+
+    .icon {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &.error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+}
+
+.icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.label {
+  white-space: nowrap;
+}
+
+.reconnectBtn {
+  padding: 6px 12px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
