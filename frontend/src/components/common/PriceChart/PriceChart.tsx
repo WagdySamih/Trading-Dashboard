@@ -7,9 +7,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { Loader } from "..";
+import variables from "styles/_variables";
 import { usePriceChart } from "./hooks";
 import { ChartDataPoint, PriceChartProps } from "./types";
-import variables from "styles/_variables";
 import styles from "./PriceChart.module.scss";
 
 const PriceChart: React.FC<PriceChartProps> = ({
@@ -29,8 +30,7 @@ const PriceChart: React.FC<PriceChartProps> = ({
     return (
       <div className={styles.container}>
         <div className={styles.loading}>
-          <div className={styles.spinner} />
-          <p>Loading chart data...</p>
+          <Loader message="Loading chart data..." />
         </div>
       </div>
     );

@@ -36,9 +36,10 @@
 .loading,
 .empty {
   flex: 1;
-  @include flex(column, center center);
+  @include flex(column, center, center);
   gap: 16px;
   color: $gray-500;
+  height: 100%;
 
   p {
     font-size: 16px;
