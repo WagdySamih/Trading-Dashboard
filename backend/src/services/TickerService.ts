@@ -7,6 +7,7 @@ import { INITIAL_TICKERS } from "../models/Ticker";
  */
 export class TickerService {
   private tickers: Map<string, Ticker> = new Map();
+  private basePrices: Map<string, number> = new Map();
 
   constructor() {
     this.initializeTickers();
@@ -18,6 +19,7 @@ export class TickerService {
   private initializeTickers(): void {
     INITIAL_TICKERS.forEach((ticker) => {
       this.tickers.set(ticker.id, { ...ticker });
+      this.basePrices.set(ticker.id, ticker.currentPrice);
     });
   }
 
@@ -33,6 +35,13 @@ export class TickerService {
    */
   getTickerById(id: string): Ticker | undefined {
     return this.tickers.get(id);
+  }
+
+  /**
+   * Get base price for a ticker
+   */
+  getBasePrice(tickerId: string): number | undefined {
+    return this.basePrices.get(tickerId);
   }
 
   /**
@@ -59,34 +68,58 @@ export class TickerService {
    */
   getHistoricalData(
     tickerId: string,
-    hours: number = 24,
+    hours: number = 1,
   ): HistoricalDataPoint[] {
     const ticker = this.tickers.get(tickerId);
     if (!ticker) return [];
 
+    const basePrice = this.basePrices.get(tickerId) || ticker.currentPrice;
+    const now = Date.now();
+    const startTime = now - hours * 60 * 60 * 1000;
+    const intervalMs = this.getIntervalForHours(hours);
+    console.log({ hours, intervalMs });
     const dataPoints: HistoricalDataPoint[] = [];
-    const now = new Date();
-    const basePrice = ticker.currentPrice;
+    let price = basePrice;
 
-    // Generate data points going backwards in time
-    for (let i = hours * 60; i >= 0; i -= 5) {
-      // Every 5 minutes
-      const timestamp = new Date(now.getTime() - i * 60 * 1000);
-
-      // Random walk for historical prices
-      const randomFactor = 1 + (Math.random() - 0.5) * 0.02; // ±1%
-      const price = basePrice * randomFactor;
+    for (let time = startTime; time <= now; time += intervalMs) {
+      price = this.generateNextPrice(price, basePrice);
 
       dataPoints.push({
-        timestamp,
+        timestamp: new Date(time),
         price: parseFloat(price.toFixed(2)),
-        volume: Math.floor(Math.random() * 1000000) + 500000,
+        volume: this.generateVolume(new Date(time)),
       });
     }
 
     return dataPoints;
   }
 
+  private getIntervalForHours(hours: number): number {
+    const minutes = hours * 60;
+
+    if (minutes <= 11) return 1000;
+    if (hours <= 1) return 20 * 1000;
+    if (hours <= 6) return 1 * 60 * 1000;
+    if (hours <= 24) return 5 * 60 * 1000;
+    return 30 * 60 * 1000;
+  }
+
+  private generateNextPrice(currentPrice: number, basePrice: number): number {
+    const volatility = 0.002;
+    const randomChange = (Math.random() - 0.5) * 2 * volatility;
+    const meanReversion = ((basePrice - currentPrice) / basePrice) * 0.05;
+
+    return currentPrice * (1 + randomChange + meanReversion);
+  }
+
+  private generateVolume(timestamp: Date): number {
+    const hour = timestamp.getHours();
+    const isMarketHours = hour >= 9 && hour <= 16;
+    const baseVolume = 500000;
+    const multiplier = isMarketHours ? 1.5 : 0.7;
+
+    return Math.floor((Math.random() * baseVolume + baseVolume) * multiplier);
+  }
   /**
    * Check if ticker exists
    */
