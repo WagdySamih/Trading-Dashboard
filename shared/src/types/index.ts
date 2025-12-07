@@ -7,6 +7,11 @@ export interface Ticker {
   changePercent: number;
   volume: number;
   lastUpdate: Date;
+
+  dayHigh: number;
+  dayLow: number;
+  previousClose: number;
+  category: "stock" | "crypto" | "forex" | "commodity";
 }
 
 export interface PriceUpdate {
