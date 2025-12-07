@@ -1,0 +1,17 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.container {
+  @include flex(row, center, center);
+  gap: 1rem;
+
+  .text {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(135deg, #10b981 0%, $primary 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
