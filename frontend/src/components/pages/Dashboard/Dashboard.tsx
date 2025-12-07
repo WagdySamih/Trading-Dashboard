@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  Logo,
   StatusIndicator,
   TickerList,
   Loader,
   SearchInput,
   PriceChartPanel,
+  Header,
 } from "components/common";
 import { useMarketData } from "./hooks";
 import styles from "./Dashboard.module.scss";
@@ -27,6 +27,8 @@ export default function Dashboard() {
     onSearch,
     searchQuery,
     filteredTickers,
+    onToggleSidebar,
+    isSidebarOpen,
   } = useMarketData();
 
   const selectedTicker = selectedTickerId
@@ -50,10 +52,12 @@ export default function Dashboard() {
   }
 
   return (
-    <div className={styles.dashboard}>
+    <div>
+      <Header />
       <main className={styles.main}>
-        <aside className={styles.section}>
-          <Logo />
+        <aside
+          className={`${styles.section} ${styles.sidebar} ${isSidebarOpen ? styles.open : ""}`}
+        >
           <SearchInput onSearch={onSearch} value={searchQuery} />
           <TickerList
             tickers={filteredTickers}
@@ -62,14 +66,16 @@ export default function Dashboard() {
           />
         </aside>
         <section className={styles.section}>
-          <StatusIndicator status={connectionStatus} onReconnect={reconnect} />
           <PriceChartPanel
             selectedTicker={selectedTicker}
             historicalData={historicalData}
             onRefresh={refreshHistoricalData}
             timeWindow={currentTimeWindow}
             onChangeTimeWindow={onChangeTimeWindow}
+            onToggleSidebar={onToggleSidebar}
+            isSidebarOpen={isSidebarOpen}
           />
+          <StatusIndicator status={connectionStatus} onReconnect={reconnect} />
         </section>
       </main>
     </div>

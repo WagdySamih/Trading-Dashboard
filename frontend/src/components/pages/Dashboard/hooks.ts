@@ -22,6 +22,7 @@ export function useMarketData(): UseMarketDataReturn {
   });
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const isInitialMount = useRef(true);
   const hasSubscribed = useRef(false);
@@ -217,6 +218,10 @@ export function useMarketData(): UseMarketDataReturn {
     wsService.connect(handlePriceUpdate, handleStatusChange);
   }, [handlePriceUpdate, handleStatusChange]);
 
+  const onToggleSidebar = useCallback(() => {
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
+
   return {
     ...state,
     searchQuery,
@@ -226,5 +231,7 @@ export function useMarketData(): UseMarketDataReturn {
     refreshHistoricalData,
     onChangeTimeWindow,
     reconnect,
+    onToggleSidebar,
+    isSidebarOpen,
   };
 }

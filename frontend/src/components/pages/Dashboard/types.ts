@@ -19,4 +19,6 @@ export type UseMarketDataReturn = MarketDataState & {
   onSearch: (query: string) => void;
   searchQuery: string;
   filteredTickers: Ticker[];
+  onToggleSidebar: () => void;
+  isSidebarOpen: boolean;
 };

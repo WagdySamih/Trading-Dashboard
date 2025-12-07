@@ -2,6 +2,9 @@ import React from "react";
 import { Ticker, HistoricalDataPoint } from "@trading-dashboard/shared";
 import { PriceChart, OptionGroup } from "..";
 import styles from "./PriceChartPanel.module.scss";
+import { formatPrice } from "utils";
+import { IconButton } from "../IconButton";
+import { Menu, XMark } from "components/icons";
 
 type PriceChartPanelProps = {
   selectedTicker: Ticker | null;
@@ -9,6 +12,8 @@ type PriceChartPanelProps = {
   onRefresh: () => void;
   timeWindow: number;
   onChangeTimeWindow: (hours: number) => void;
+  onToggleSidebar: () => void;
+  isSidebarOpen: boolean;
 };
 
 export const PriceChartPanel: React.FC<PriceChartPanelProps> = ({
@@ -17,32 +22,22 @@ export const PriceChartPanel: React.FC<PriceChartPanelProps> = ({
   onRefresh,
   timeWindow,
   onChangeTimeWindow,
+  onToggleSidebar,
+  isSidebarOpen,
 }) => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleSection}>
-          <h2 className={styles.title}>
-            Price Chart: {selectedTicker?.symbol}
-          </h2>
-          {selectedTicker && (
-            <div className={styles.currentPrice}>
-              <span className={styles.label}>Current:</span>
-              <span className={styles.price}>
-                ${selectedTicker.currentPrice.toFixed(2)}
-              </span>
-              <span
-                className={`${styles.change} ${
-                  selectedTicker.changePercent >= 0
-                    ? styles.positive
-                    : styles.negative
-                }`}
-              >
-                {selectedTicker.changePercent >= 0 ? "+" : ""}
-                {selectedTicker.changePercent.toFixed(2)}%
-              </span>
-            </div>
-          )}
+          <IconButton
+            icon={isSidebarOpen ? <XMark /> : <Menu />}
+            onClick={() => onToggleSidebar()}
+            className={styles.menuButton}
+          />
+          <div>
+            <h2 className={styles.title}>{selectedTicker?.symbol}</h2>
+            <p>{selectedTicker?.name}</p>
+          </div>
         </div>
 
         <div className={styles.controls}>
@@ -64,7 +59,52 @@ export const PriceChartPanel: React.FC<PriceChartPanelProps> = ({
           </button>
         </div>
       </div>
-
+      {selectedTicker && (
+        <div className={styles.stats}>
+          <div>
+            <div className={styles.label}>Current Price</div>
+            <div className={styles.value}>
+              <div className={styles.price}>
+                ${selectedTicker.currentPrice.toFixed(2)}
+              </div>
+              <div
+                className={`${styles.change} ${
+                  selectedTicker.changePercent >= 0
+                    ? styles.positive
+                    : styles.negative
+                }`}
+              >
+                {selectedTicker.changePercent >= 0 ? "+" : ""}
+                {selectedTicker.changePercent.toFixed(2)}%
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className={styles.label}>Day High</div>
+            <div className={`${styles.value} ${styles.up}`}>
+              {formatPrice(selectedTicker?.dayHigh)}
+            </div>
+          </div>
+          <div>
+            <div className={styles.label}>Day Low</div>
+            <div className={`${styles.value} ${styles.down}`}>
+              {formatPrice(selectedTicker?.dayLow)}
+            </div>
+          </div>
+          <div>
+            <div className={styles.label}>Volume</div>
+            <div className={styles.value}>
+              {formatPrice(selectedTicker?.volume)}
+            </div>
+          </div>
+          <div>
+            <div className={styles.label}>Previous Close</div>
+            <div className={styles.value}>
+              {formatPrice(selectedTicker?.previousClose)}
+            </div>
+          </div>
+        </div>
+      )}
       <PriceChart
         data={historicalData}
         tickerSymbol={selectedTicker?.symbol}
