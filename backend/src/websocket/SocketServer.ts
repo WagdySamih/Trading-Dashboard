@@ -33,26 +33,26 @@ export class SocketServer {
    */
   private setupSocketHandlers(): void {
     this.io.on("connection", (socket) => {
-      console.log(`Client connected: ${socket.id}`);
-
-      // Handle subscription to specific tickers
       socket.on(WsMessageType.SUBSCRIBE, (data: { tickerIds: string[] }) => {
-        console.log(`Client ${socket.id} subscribed to:`, data.tickerIds);
-
-        // Join rooms for each ticker (Socket.IO feature)
         data.tickerIds.forEach((tickerId) => {
           if (this.tickerService.tickerExists(tickerId)) {
             socket.join(tickerId);
 
-            // Send current price immediately on subscribe
+            const currentSimulatedPrice =
+              this.marketSimulator.getCurrentPrice(tickerId);
             const ticker = this.tickerService.getTickerById(tickerId);
-            if (ticker) {
+
+            if (ticker && currentSimulatedPrice !== undefined) {
+              const basePrice = ticker.currentPrice;
+              const change = currentSimulatedPrice - basePrice;
+              const changePercent = (change / basePrice) * 100;
+
               socket.emit(WsMessageType.PRICE_UPDATE, {
                 tickerId: ticker.id,
-                price: ticker.currentPrice,
-                change: ticker.change,
-                changePercent: ticker.changePercent,
-                timestamp: ticker.lastUpdate,
+                price: parseFloat(currentSimulatedPrice.toFixed(2)),
+                change: parseFloat(change.toFixed(2)),
+                changePercent: parseFloat(changePercent.toFixed(2)),
+                timestamp: new Date(),
               });
             }
           }
@@ -81,18 +81,19 @@ export class SocketServer {
    * Listen to market simulator and broadcast updates
    */
   private setupMarketDataListener(): void {
-    this.marketSimulator.on("priceUpdate", (update: PriceUpdate) => {
-      // Update service state
-      this.tickerService.updateTickerPrice(
-        update.tickerId,
-        update.price,
-        update.change,
-        update.changePercent,
-      );
+    this.marketSimulator.on(
+      WsMessageType.PRICE_UPDATE,
+      (update: PriceUpdate) => {
+        this.tickerService.updateTickerPrice(
+          update.tickerId,
+          update.price,
+          update.change,
+          update.changePercent,
+        );
 
-      // Broadcast to all clients subscribed to this ticker
-      this.io.to(update.tickerId).emit(WsMessageType.PRICE_UPDATE, update);
-    });
+        this.io.to(update.tickerId).emit(WsMessageType.PRICE_UPDATE, update);
+      },
+    );
   }
 
   /**
