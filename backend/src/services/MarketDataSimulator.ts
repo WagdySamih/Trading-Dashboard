@@ -1,23 +1,16 @@
 import { EventEmitter } from "events";
 import { INITIAL_TICKERS } from "../models/Ticker";
-import { PriceUpdate } from "@trading-dashboard/shared";
+import { PriceUpdate, WsMessageType } from "@trading-dashboard/shared";
 
-/**
- * MarketDataSimulator generates realistic price movements
- *
- * Learning concepts:
- * - EventEmitter pattern (publish-subscribe)
- * - Random walk algorithm (finance concept)
- * - Volatility simulation
- */
 export class MarketDataSimulator extends EventEmitter {
   private isRunning = false;
   private intervalId?: NodeJS.Timeout;
   private currentPrices: Map<string, number> = new Map();
   private basePrices: Map<string, number> = new Map();
 
-  private readonly UPDATE_INTERVAL = 1000; // 1 second
-  private readonly VOLATILITY = 0.002; // 0.2% max change per update
+  private readonly UPDATE_INTERVAL = 1000;
+  private readonly VOLATILITY = 0.002;
+  private readonly MEAN_REVERSION = 0.05;
 
   constructor() {
     super();
@@ -31,21 +24,19 @@ export class MarketDataSimulator extends EventEmitter {
     });
   }
 
-  /**
-   * Generate next price using random walk
-   *
-   * Random Walk: price moves up or down by small random amount
-   * Formula: newPrice = currentPrice * (1 + randomChange)
-   */
   private generatePriceUpdate(tickerId: string): PriceUpdate | null {
     const currentPrice = this.currentPrices.get(tickerId);
     const basePrice = this.basePrices.get(tickerId);
 
     if (!currentPrice || !basePrice) return null;
 
-    // Random change between -VOLATILITY and +VOLATILITY
-    const randomChange = (Math.random() - 0.5) * 2 * this.VOLATILITY;
-    const newPrice = currentPrice * (1 + randomChange);
+    const randomChange = (Math.random() - 0.5) * 2;
+    const deviation = (currentPrice - basePrice) / basePrice;
+    const meanReversionChange = -deviation * this.MEAN_REVERSION;
+
+    const totalChange =
+      (randomChange * 0.8 + meanReversionChange * 0.2) * this.VOLATILITY;
+    const newPrice = currentPrice * (1 + totalChange);
 
     const change = newPrice - basePrice;
     const changePercent = (change / basePrice) * 100;
@@ -65,13 +56,12 @@ export class MarketDataSimulator extends EventEmitter {
     if (this.isRunning) return;
 
     this.isRunning = true;
-    console.log("📈 Market data simulator started");
 
     this.intervalId = setInterval(() => {
       INITIAL_TICKERS.forEach((ticker) => {
         const update = this.generatePriceUpdate(ticker.id);
         if (update) {
-          this.emit("priceUpdate", update);
+          this.emit(WsMessageType.PRICE_UPDATE, update);
         }
       });
     }, this.UPDATE_INTERVAL);
@@ -85,7 +75,6 @@ export class MarketDataSimulator extends EventEmitter {
     }
 
     this.isRunning = false;
-    console.log("📉 Market data simulator stopped");
   }
 
   getCurrentPrice(tickerId: string): number | undefined {
