@@ -1,0 +1,109 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.card {
+  @include flex(column);
+  gap: 16px;
+  background: $white;
+  border: 2px solid $gray-200;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.selected {
+    border-color: $primary;
+    background: linear-gradient(to bottom, #eff6ff, white);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+}
+
+.content {
+  @include flex(row, space-between, flex-start);
+
+  .symbolInfo {
+    flex: 1;
+
+    .symbol {
+      font-size: 20px;
+      font-weight: 700;
+      color: $gray-900;
+      margin: 0 0 4px 0;
+    }
+
+    .name {
+      font-size: 14px;
+      color: $gray-500;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.info {
+  @include flex(row, center, center);
+  gap: 0.5rem;
+
+  font-size: 18px;
+  font-weight: bold;
+
+  &.up {
+    color: $success;
+  }
+
+  &.down {
+    color: $error;
+  }
+}
+
+.percent {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 8px;
+
+  &.up {
+    color: $success;
+  }
+
+  &.down {
+    color: $error;
+  }
+}
+
+.change {
+  font-size: 12px;
+  padding: 2px 8px;
+
+  text-align: right;
+
+  &.up {
+    color: $success;
+  }
+
+  &.down {
+    color: $error;
+  }
+}
+
+.price {
+  font-size: 20px;
+  font-weight: 700;
+  color: $gray-900;
+}
