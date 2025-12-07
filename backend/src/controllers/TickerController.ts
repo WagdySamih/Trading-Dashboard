@@ -56,12 +56,12 @@ export class TickerController {
   /**
    * GET /api/tickers/:id/history
    * Returns historical price data
-   * Query params: hours (default: 24)
+   * Query params: hours (default: 1)
    */
   getTickerHistory = (req: Request, res: Response): void => {
     try {
       const { id } = req.params;
-      const hours = parseInt(req.query.hours as string) || 24;
+      const hours = +(req.query.hours || 1);
 
       if (!this.tickerService.tickerExists(id)) {
         const response: ApiResponse<null> = {
