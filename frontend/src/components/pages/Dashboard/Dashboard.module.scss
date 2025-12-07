@@ -1,0 +1,27 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.container {
+  .sidebar {
+    @include flex(column);
+    gap: 20px;
+    width: 450px;
+  }
+}
+.main {
+  @include flex(row);
+  flex-wrap: nowrap;
+  gap: 2rem;
+  padding: 1rem;
+
+  aside {
+    width: 450px;
+    @include flex(column);
+    gap: 20px;
+  }
+
+  section {
+    margin-top: 5rem;
+    flex: 1;
+  }
+}
