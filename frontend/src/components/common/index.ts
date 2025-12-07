@@ -7,3 +7,5 @@ export * from "./OptionGroup";
 export * from "./PriceChart";
 export * from "./PriceChartPanel";
 export * from "./StatusIndicator";
+export * from "./Header";
+export * from "./IconButton";
