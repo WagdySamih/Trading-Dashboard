@@ -1,5 +1,5 @@
 import { MarketDataSimulator } from "../../src/services/MarketDataSimulator";
-import { PriceUpdate } from "@trading-dashboard/shared";
+import { PriceUpdate, WsMessageType } from "@trading-dashboard/shared";
 
 describe("MarketDataSimulator", () => {
   let simulator: MarketDataSimulator;
@@ -34,29 +34,28 @@ describe("MarketDataSimulator", () => {
     it("should emit priceUpdate events when started", (done) => {
       let updateCount = 0;
 
-      simulator.on("priceUpdate", (update: PriceUpdate) => {
+      const handler = (update: PriceUpdate) => {
         updateCount++;
 
-        // Verify update structure
         expect(update).toHaveProperty("tickerId");
         expect(update).toHaveProperty("price");
         expect(update).toHaveProperty("change");
         expect(update).toHaveProperty("changePercent");
         expect(update).toHaveProperty("timestamp");
 
-        // Verify types
         expect(typeof update.price).toBe("number");
         expect(update.price).toBeGreaterThan(0);
 
         if (updateCount >= 5) {
-          // Wait for 5 updates
+          simulator.removeListener(WsMessageType.PRICE_UPDATE, handler); // Remove listener first
           simulator.stop();
           done();
         }
-      });
+      };
 
+      simulator.on(WsMessageType.PRICE_UPDATE, handler);
       simulator.start();
-    }, 10000); // 10s timeout
+    }, 10000);
 
     it("should generate different prices over time", (done) => {
       const initialPrice = simulator.getCurrentPrice("AAPL");
