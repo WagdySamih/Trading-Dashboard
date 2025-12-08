@@ -26,3 +26,34 @@ export const dateFormatter = (date: Date) => {
     year: "numeric",
   });
 };
+
+export const formatLargeNumber = (
+  value: number,
+  decimals: number = 1,
+  includeSymbol: boolean = false,
+): string => {
+  const symbol = includeSymbol ? "$" : "";
+  const absValue = Math.abs(value);
+  const sign = value < 0 ? "-" : "";
+
+  // Billions
+  if (absValue >= 1_000_000_000) {
+    const formatted = (absValue / 1_000_000_000).toFixed(decimals);
+    return `${sign}${symbol}${formatted}B`;
+  }
+
+  // Millions
+  if (absValue >= 1_000_000) {
+    const formatted = (absValue / 1_000_000).toFixed(decimals);
+    return `${sign}${symbol}${formatted}M`;
+  }
+
+  // Thousands
+  if (absValue >= 1_000) {
+    const formatted = (absValue / 1_000).toFixed(decimals);
+    return `${sign}${symbol}${formatted}K`;
+  }
+
+  // Less than 1000
+  return `${sign}${symbol}${absValue.toFixed(decimals)}`;
+};
