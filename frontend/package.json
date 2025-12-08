@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@trading-dashboard/shared": "*",
+    "axios": "^1.13.2",
     "next": "16.0.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "recharts": "^3.5.1"
+    "recharts": "^3.5.1",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@types/node": "^20",
