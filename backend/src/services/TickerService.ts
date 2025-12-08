@@ -99,7 +99,6 @@ export class TickerService {
 
     if (minutes <= 11) return 1000;
     if (hours <= 1) return 20 * 1000;
-    if (hours <= 6) return 1 * 60 * 1000;
     if (hours <= 24) return 5 * 60 * 1000;
     return 30 * 60 * 1000;
   }
