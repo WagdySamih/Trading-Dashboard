@@ -77,7 +77,6 @@ export class TickerService {
     const now = Date.now();
     const startTime = now - hours * 60 * 60 * 1000;
     const intervalMs = this.getIntervalForHours(hours);
-    console.log({ hours, intervalMs });
     const dataPoints: HistoricalDataPoint[] = [];
     let price = basePrice;
 

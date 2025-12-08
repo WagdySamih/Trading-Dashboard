@@ -55,7 +55,6 @@ class WebSocketService {
 
     // Price update events
     this.socket.on(WsMessageType.PRICE_UPDATE, (data: PriceUpdate) => {
-      console.log("Received price update:", data);
       // Convert timestamp string to Date
       const update: PriceUpdate = {
         ...data,

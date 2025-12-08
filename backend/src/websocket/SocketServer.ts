@@ -61,10 +61,6 @@ export class SocketServer {
 
       // Handle unsubscribe
       socket.on(WsMessageType.UNSUBSCRIBE, (data: { tickerIds: string[] }) => {
-        console.log(
-          `📊 Client ${socket.id} unsubscribed from:`,
-          data.tickerIds,
-        );
         data.tickerIds.forEach((tickerId) => {
           socket.leave(tickerId);
         });
