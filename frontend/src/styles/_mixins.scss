@@ -10,3 +10,11 @@
   align-items: $align;
   flex-wrap: $wrap;
 }
+
+@mixin responsive-font($desktop, $mobile) {
+  font-size: $desktop;
+
+  @media (max-width: 750px) {
+    font-size: $mobile;
+  }
+}

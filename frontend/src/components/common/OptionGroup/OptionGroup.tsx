@@ -19,7 +19,9 @@ const TimeFilter: React.FC<Props> = ({ onChoose, value, options }) => {
           key={option.value}
           className={`${styles.button} ${value === option.value ? styles.active : ""}`}
           onClick={() => onChoose(option.value)}
-          disabled={value === option.value}
+          style={{
+            width: `${100 / options.length}%`,
+          }}
         >
           {option.label}
         </button>

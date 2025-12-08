@@ -2,14 +2,13 @@ import React from "react";
 import { Ticker, HistoricalDataPoint } from "@trading-dashboard/shared";
 import { PriceChart, OptionGroup } from "..";
 import styles from "./PriceChartPanel.module.scss";
-import { formatPrice } from "utils";
+import { formatLargeNumber, formatPrice } from "utils";
 import { IconButton } from "../IconButton";
 import { Menu, XMark } from "components/icons";
 
 type PriceChartPanelProps = {
   selectedTicker: Ticker | null;
   historicalData: HistoricalDataPoint[];
-  onRefresh: () => void;
   timeWindow: number;
   onChangeTimeWindow: (hours: number) => void;
   onToggleSidebar: () => void;
@@ -19,7 +18,6 @@ type PriceChartPanelProps = {
 export const PriceChartPanel: React.FC<PriceChartPanelProps> = ({
   selectedTicker,
   historicalData,
-  onRefresh,
   timeWindow,
   onChangeTimeWindow,
   onToggleSidebar,
@@ -36,7 +34,7 @@ export const PriceChartPanel: React.FC<PriceChartPanelProps> = ({
           />
           <div>
             <h2 className={styles.title}>{selectedTicker?.symbol}</h2>
-            <p>{selectedTicker?.name}</p>
+            <p className={styles.subTitle}>{selectedTicker?.name}</p>
           </div>
         </div>
 
@@ -45,7 +43,6 @@ export const PriceChartPanel: React.FC<PriceChartPanelProps> = ({
             options={[
               { label: "10M", value: 0.167 },
               { label: "1H", value: 1 },
-              { label: "6H", value: 6 },
               { label: "12H", value: 12 },
               { label: "1D", value: 24 },
               { label: "7D", value: 168 },
@@ -53,10 +50,6 @@ export const PriceChartPanel: React.FC<PriceChartPanelProps> = ({
             value={timeWindow}
             onChoose={(timeWindow) => onChangeTimeWindow(timeWindow || 1)}
           />
-
-          <button className={styles.refreshBtn} onClick={() => onRefresh()}>
-            ↻ Refresh
-          </button>
         </div>
       </div>
       {selectedTicker && (
@@ -94,7 +87,7 @@ export const PriceChartPanel: React.FC<PriceChartPanelProps> = ({
           <div>
             <div className={styles.label}>Volume</div>
             <div className={styles.value}>
-              {formatPrice(selectedTicker?.volume)}
+              {formatLargeNumber(selectedTicker?.volume, 0, true)}
             </div>
           </div>
           <div>

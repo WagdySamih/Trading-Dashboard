@@ -8,10 +8,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Loader } from "..";
-import variables from "styles/_variables";
+import { useWindowWidth } from "hooks"; // Add your import path
 import { usePriceChart } from "./hooks";
 import { ChartDataPoint, PriceChartProps } from "./types";
 import styles from "./PriceChart.module.scss";
+import variables from "styles/_variables";
 
 const PriceChart: React.FC<PriceChartProps> = ({
   data,
@@ -25,6 +26,18 @@ const PriceChart: React.FC<PriceChartProps> = ({
       tickerSymbol,
       timeWindow,
     });
+
+  const windowWidth = useWindowWidth();
+  const isMobile = windowWidth <= 750;
+
+  const chartMargins = isMobile
+    ? { top: 5, right: 10, left: -20, bottom: 5 }
+    : { top: 5, right: 30, left: 0, bottom: 5 };
+
+  const axisFontSize = isMobile ? 10 : 12;
+  const minTickGap = isMobile ? 30 : 50;
+  const strokeWidth = isMobile ? 1.5 : 2;
+  const activeDotRadius = isMobile ? 4 : 6;
 
   if (isLoading) {
     return (
@@ -55,39 +68,48 @@ const PriceChart: React.FC<PriceChartProps> = ({
         </div>
       )}
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={chartData}
-          margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
-        >
+        <AreaChart data={chartData} margin={chartMargins}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={lineColor} stopOpacity={0.3} />
               <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#e5e7eb"
+            opacity={isMobile ? 0.5 : 1}
+          />
           <XAxis
             dataKey="formattedTime"
             stroke={variables.gray500}
-            fontSize={12}
+            fontSize={axisFontSize}
             tickLine={false}
-            minTickGap={50}
+            minTickGap={minTickGap}
+            angle={isMobile ? -45 : 0}
+            textAnchor={isMobile ? "end" : "middle"}
+            height={isMobile ? 60 : 30}
           />
           <YAxis
             stroke={variables.gray500}
-            fontSize={12}
+            fontSize={axisFontSize}
             tickLine={false}
-            tickFormatter={(value) => `$${value.toFixed(0)}`}
+            tickFormatter={(value) =>
+              isMobile
+                ? `$${(value / 1000).toFixed(0)}k`
+                : `$${value.toFixed(0)}`
+            }
             domain={["auto", "auto"]}
+            width={isMobile ? 40 : 60}
           />
           <Tooltip content={<CustomTooltip />} />
           <Area
             type="monotone"
             dataKey="price"
             stroke={lineColor}
-            strokeWidth={2}
+            strokeWidth={strokeWidth}
             fill={`url(#${gradientId})`}
-            activeDot={{ r: 6 }}
+            activeDot={{ r: activeDotRadius }}
             isAnimationActive={isInitialMount.current}
             animationDuration={isInitialMount.current ? 1000 : 0}
             animationEasing="ease-in-out"

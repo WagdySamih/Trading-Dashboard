@@ -1,5 +1,6 @@
 @import "styles/variables";
 @import "styles/mixins";
+@import "styles/media";
 
 .header {
   @include flex(row, space-between, center);
@@ -7,4 +8,8 @@
   padding: 16px 24px;
   background-color: $white;
   border-bottom: 1px solid $gray-200;
+
+  @include breakpoint("tablet") {
+    @include flex(row, center, center);
+  }
 }

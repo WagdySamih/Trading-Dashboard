@@ -7,9 +7,11 @@ import {
   SearchInput,
   PriceChartPanel,
   Header,
+  IconButton,
 } from "components/common";
 import { useMarketData } from "./hooks";
 import styles from "./Dashboard.module.scss";
+import { Menu, XMark } from "components/icons";
 
 export default function Dashboard() {
   const {
@@ -21,7 +23,6 @@ export default function Dashboard() {
     isLoading,
     error,
     selectTicker,
-    refreshHistoricalData,
     reconnect,
     onChangeTimeWindow,
     onSearch,
@@ -52,13 +53,20 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
+    <div className={styles.dashboard}>
       <Header />
       <main className={styles.main}>
         <aside
           className={`${styles.section} ${styles.sidebar} ${isSidebarOpen ? styles.open : ""}`}
         >
-          <SearchInput onSearch={onSearch} value={searchQuery} />
+          <div className={styles.searchHeader}>
+            <IconButton
+              icon={isSidebarOpen ? <XMark /> : <Menu />}
+              onClick={() => onToggleSidebar()}
+              className={styles.menuButton}
+            />
+            <SearchInput onSearch={onSearch} value={searchQuery} />
+          </div>
           <TickerList
             tickers={filteredTickers}
             selectedTickerId={selectedTickerId}
@@ -69,12 +77,12 @@ export default function Dashboard() {
           <PriceChartPanel
             selectedTicker={selectedTicker}
             historicalData={historicalData}
-            onRefresh={refreshHistoricalData}
             timeWindow={currentTimeWindow}
             onChangeTimeWindow={onChangeTimeWindow}
             onToggleSidebar={onToggleSidebar}
             isSidebarOpen={isSidebarOpen}
           />
+
           <StatusIndicator status={connectionStatus} onReconnect={reconnect} />
         </section>
       </main>

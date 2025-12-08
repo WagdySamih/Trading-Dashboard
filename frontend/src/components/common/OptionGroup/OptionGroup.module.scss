@@ -1,5 +1,6 @@
 @import "styles/variables";
 @import "styles/mixins";
+@import "styles/media";
 
 .container {
   @include flex(row);
@@ -8,6 +9,15 @@
   border: 1px solid $gray-200;
   padding: 0 1rem;
   border-radius: 12px;
+  width: 100%;
+
+  @include breakpoint("tablet") {
+    gap: 0.5rem;
+    flex: 1;
+  }
+  @include breakpoint("phone-md") {
+    gap: 0;
+  }
 
   .button {
     padding: 0.5rem 1rem;
@@ -22,11 +32,15 @@
       color 0.3s;
 
     &:hover {
-      background-color: $gray-300;
+      opacity: 0.9;
     }
 
     &:disabled {
       cursor: not-allowed;
+    }
+
+    @include breakpoint("tablet") {
+      padding: 0.5rem;
     }
   }
 

@@ -1,8 +1,10 @@
 @import "styles/variables";
 @import "styles/mixins";
+@import "styles/media";
 
 .container {
   width: 100%;
+  padding: 0 1rem;
 }
 
 .header {
@@ -22,10 +24,14 @@
 }
 
 .title {
-  font-size: 2rem;
+  @include responsive-font(2em, 1.5rem);
   font-weight: 700;
   color: #111827;
   margin: 0;
+}
+
+.subTitle {
+  @include responsive-font(1rem, 0.75rem);
 }
 
 .currentPrice {
@@ -39,7 +45,7 @@
 }
 
 .price {
-  font-size: 20px;
+  @include responsive-font(1.25rem, 1rem);
   font-weight: 700;
   color: $gray-900;
   margin-bottom: 0.5rem;
@@ -64,8 +70,13 @@
 }
 
 .controls {
-  @include flex(row, flex-start, center);
+  @include flex(row, flex-start, center, wrap);
   gap: 12px;
+
+  @include breakpoint("tablet") {
+    width: 100%;
+    gap: 8px;
+  }
 }
 
 .select {
@@ -90,30 +101,9 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 750px) {
     flex: 1;
     min-width: auto;
-  }
-}
-
-.refreshBtn {
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  color: $white;
-  background: $primary;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  $white-space: nowrap;
-
-  &:hover {
-    background: $primary-dark;
-  }
-
-  &:active {
-    transform: scale(0.98);
   }
 }
 
@@ -130,13 +120,13 @@
   }
 
   .label {
-    font-size: 1rem;
+    @include responsive-font(1rem, 0.8rem);
     color: $gray-500;
     text-transform: uppercase;
   }
 
   .value {
-    font-size: 1.5rem;
+    @include responsive-font(1.5rem, 1rem);
     font-weight: 700;
     color: $gray-900;
 

@@ -1,5 +1,6 @@
 @import "styles/variables";
 @import "styles/mixins";
+@import "styles/media";
 
 .container {
   @include flex(column);
@@ -13,6 +14,11 @@
   min-height: 0;
   width: 100%;
   height: 700px;
+
+  @include breakpoint("tablet") {
+    height: 400px;
+    padding: 1rem;
+  }
 }
 
 .header {

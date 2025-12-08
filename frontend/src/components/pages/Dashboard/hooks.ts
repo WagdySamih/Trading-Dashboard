@@ -3,6 +3,7 @@ import { PriceUpdate } from "@trading-dashboard/shared";
 import { wsService, tickerService } from "services";
 import { ConnectionStatus } from "types";
 import { MarketDataState, UseMarketDataReturn } from "./types";
+import { useWindowWidth } from "hooks";
 
 const CONFIG = {
   MAX_CHART_POINTS: 2500,
@@ -11,6 +12,8 @@ const CONFIG = {
 };
 
 export function useMarketData(): UseMarketDataReturn {
+  const windowWidth = useWindowWidth();
+
   const [state, setState] = useState<MarketDataState>({
     tickers: new Map(),
     selectedTickerId: null,
@@ -22,10 +25,14 @@ export function useMarketData(): UseMarketDataReturn {
   });
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const isInitialMount = useRef(true);
   const hasSubscribed = useRef(false);
+
+  useEffect(() => {
+    setIsSidebarOpen(windowWidth >= 750);
+  }, [windowWidth]);
 
   const handlePriceUpdate = useCallback((update: PriceUpdate) => {
     setState((prev) => {
@@ -181,30 +188,6 @@ export function useMarketData(): UseMarketDataReturn {
     }));
   }, []);
 
-  const refreshHistoricalData = useCallback(async () => {
-    if (!state.selectedTickerId) return;
-
-    try {
-      setState((prev) => ({ ...prev, isLoading: true }));
-      const data = await tickerService.getHistoricalData(
-        state.selectedTickerId,
-        state.currentTimeWindow,
-      );
-      setState((prev) => ({
-        ...prev,
-        historicalData: data,
-        isLoading: false,
-      }));
-    } catch (error) {
-      console.error("Failed to refresh historical data:", error);
-      setState((prev) => ({
-        ...prev,
-        error: "Failed to refresh data",
-        isLoading: false,
-      }));
-    }
-  }, [state.selectedTickerId, state.currentTimeWindow]);
-
   const onChangeTimeWindow = useCallback((hours: number) => {
     setState((prev) => ({
       ...prev,
@@ -228,7 +211,6 @@ export function useMarketData(): UseMarketDataReturn {
     onSearch,
     filteredTickers,
     selectTicker,
-    refreshHistoricalData,
     onChangeTimeWindow,
     reconnect,
     onToggleSidebar,
