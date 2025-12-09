@@ -34,12 +34,14 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
-export enum WsMessageType {
-  SUBSCRIBE = "SUBSCRIBE",
-  UNSUBSCRIBE = "UNSUBSCRIBE",
-  PRICE_UPDATE = "PRICE_UPDATE",
-  ERROR = "ERROR",
-}
+export const WsMessageType = {
+  SUBSCRIBE: "SUBSCRIBE",
+  UNSUBSCRIBE: "UNSUBSCRIBE",
+  PRICE_UPDATE: "PRICE_UPDATE",
+  ERROR: "ERROR",
+} as const;
+
+export type WsMessageType = (typeof WsMessageType)[keyof typeof WsMessageType];
 
 export interface WsMessage {
   type: WsMessageType;
@@ -48,13 +50,13 @@ export interface WsMessage {
 }
 
 export interface SubscribeMessage extends WsMessage {
-  type: WsMessageType.SUBSCRIBE;
+  type: typeof WsMessageType.SUBSCRIBE;
   payload: {
     tickerIds: string[];
   };
 }
 
 export interface PriceUpdateMessage extends WsMessage {
-  type: WsMessageType.PRICE_UPDATE;
+  type: typeof WsMessageType.PRICE_UPDATE;
   payload: PriceUpdate;
 }

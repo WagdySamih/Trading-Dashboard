@@ -1,5 +1,5 @@
 import React from "react";
-import { Ticker } from "@trading-dashboard/shared";
+import { type Ticker } from "@trading-dashboard/shared";
 import { TrendingDown, TrendingUp } from "components/icons";
 import { formatPercent, formatPrice } from "utils";
 import styles from "./TickerCard.module.scss";

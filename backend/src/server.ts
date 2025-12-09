@@ -1,11 +1,11 @@
-import express, { Express } from "express";
+import express, { type Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { createServer } from "http";
-import { MarketDataSimulator } from "./services/MarketDataSimulator";
-import { TickerService } from "./services/TickerService";
-import { SocketServer } from "./websocket/SocketServer";
-import { createTickerRoutes } from "./routes/tickerRoutes";
+import { MarketDataSimulator } from "./services/MarketDataSimulator.js";
+import { TickerService } from "./services/TickerService.js";
+import { SocketServer } from "./websocket/SocketServer.js";
+import { createTickerRoutes } from "./routes/tickerRoutes.js";
 
 dotenv.config();
 

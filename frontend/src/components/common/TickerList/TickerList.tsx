@@ -1,4 +1,4 @@
-import { Ticker } from "@trading-dashboard/shared";
+import { type Ticker } from "@trading-dashboard/shared";
 import { TickerCard } from "../TickerCard";
 import styles from "./TickerList.module.scss";
 

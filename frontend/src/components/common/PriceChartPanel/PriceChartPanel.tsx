@@ -1,5 +1,8 @@
 import React from "react";
-import { Ticker, HistoricalDataPoint } from "@trading-dashboard/shared";
+import {
+  type Ticker,
+  type HistoricalDataPoint,
+} from "@trading-dashboard/shared";
 import { PriceChart, OptionGroup } from "..";
 import styles from "./PriceChartPanel.module.scss";
 import { formatLargeNumber, formatPrice } from "utils";

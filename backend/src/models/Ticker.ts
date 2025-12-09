@@ -1,4 +1,4 @@
-import { Ticker as ITicker } from "@trading-dashboard/shared";
+import { type Ticker as ITicker } from "@trading-dashboard/shared";
 
 export const INITIAL_TICKERS: ITicker[] = [
   {

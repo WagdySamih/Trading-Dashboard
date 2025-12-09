@@ -10,7 +10,7 @@ import {
 import { Loader } from "..";
 import { useWindowWidth } from "hooks"; // Add your import path
 import { usePriceChart } from "./hooks";
-import { ChartDataPoint, PriceChartProps } from "./types";
+import { type ChartDataPoint, type PriceChartProps } from "./types";
 import styles from "./PriceChart.module.scss";
 import variables from "styles/_variables";
 

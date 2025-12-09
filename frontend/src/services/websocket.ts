@@ -1,5 +1,5 @@
-import { ConnectionStatus } from "types";
-import { PriceUpdate, WsMessageType } from "@trading-dashboard/shared";
+import { type ConnectionStatus } from "types";
+import { type PriceUpdate, WsMessageType } from "@trading-dashboard/shared";
 import { io, Socket } from "socket.io-client";
 
 class WebSocketService {

@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
-import { INITIAL_TICKERS } from "../models/Ticker";
-import { PriceUpdate, WsMessageType } from "@trading-dashboard/shared";
+import { INITIAL_TICKERS } from "../models/Ticker.js";
+import { type PriceUpdate, WsMessageType } from "@trading-dashboard/shared";
 
 export class MarketDataSimulator extends EventEmitter {
   private isRunning = false;

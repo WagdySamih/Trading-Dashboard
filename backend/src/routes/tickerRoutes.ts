@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { TickerController } from "../controllers/TickerController";
-import { TickerService } from "../services/TickerService";
+import { TickerController } from "../controllers/TickerController.js";
+import { TickerService } from "../services/TickerService.js";
 
 export function createTickerRoutes(tickerService: TickerService): Router {
   const router = Router();

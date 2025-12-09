@@ -1,5 +1,8 @@
-import { Ticker, HistoricalDataPoint } from "@trading-dashboard/shared";
-import { INITIAL_TICKERS } from "../models/Ticker";
+import {
+  type Ticker,
+  type HistoricalDataPoint,
+} from "@trading-dashboard/shared";
+import { INITIAL_TICKERS } from "../models/Ticker.js";
 
 /**
  * TickerService handles business logic for tickers

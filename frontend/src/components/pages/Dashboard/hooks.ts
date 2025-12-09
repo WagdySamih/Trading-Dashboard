@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { PriceUpdate } from "@trading-dashboard/shared";
+import { type PriceUpdate } from "@trading-dashboard/shared";
 import { wsService, tickerService } from "services";
-import { ConnectionStatus } from "types";
-import { MarketDataState, UseMarketDataReturn } from "./types";
+import { type ConnectionStatus } from "types";
+import { type MarketDataState, type UseMarketDataReturn } from "./types";
 import { useWindowWidth } from "hooks";
 
 const CONFIG = {

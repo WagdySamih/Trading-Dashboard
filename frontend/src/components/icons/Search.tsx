@@ -1,5 +1,5 @@
 import variables from "styles/_variables";
-import { Props } from "./types";
+import { type Props } from "./types";
 
 export const SearchIcon: React.FC<Props> = ({
   width = "20",

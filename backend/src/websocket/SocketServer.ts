@@ -1,8 +1,8 @@
 import { Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "http";
-import { MarketDataSimulator } from "../services/MarketDataSimulator";
-import { TickerService } from "../services/TickerService";
-import { WsMessageType, PriceUpdate } from "@trading-dashboard/shared";
+import { MarketDataSimulator } from "../services/MarketDataSimulator.js";
+import { TickerService } from "../services/TickerService.js";
+import { WsMessageType, type PriceUpdate } from "@trading-dashboard/shared";
 
 /**
  * SocketServer handles real-time WebSocket connections

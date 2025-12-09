@@ -1,5 +1,5 @@
 import React from "react";
-import { ConnectionStatus } from "types";
+import { type ConnectionStatus } from "types";
 import styles from "./StatusIndicator.module.scss";
 
 interface StatusIndicatorProps {

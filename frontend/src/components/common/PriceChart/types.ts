@@ -1,4 +1,4 @@
-import { HistoricalDataPoint } from "@trading-dashboard/shared";
+import { type HistoricalDataPoint } from "@trading-dashboard/shared";
 
 export type PriceChartProps = {
   data: HistoricalDataPoint[];

@@ -1,4 +1,4 @@
-import { Props } from "./types";
+import { type Props } from "./types";
 import variables from "styles/_variables";
 
 export const TrendingDown: React.FC<Props> = ({

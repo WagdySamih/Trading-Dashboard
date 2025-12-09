@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { dateFormatter, timeFormatter } from "utils";
-import { ChartDataPoint, PriceChartProps } from "./types";
+import { type ChartDataPoint, type PriceChartProps } from "./types";
 import variables from "styles/_variables";
 
 export const usePriceChart = ({

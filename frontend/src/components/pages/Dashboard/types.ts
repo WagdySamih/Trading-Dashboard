@@ -1,5 +1,8 @@
-import { HistoricalDataPoint, Ticker } from "@trading-dashboard/shared";
-import { ConnectionStatus } from "types";
+import {
+  type HistoricalDataPoint,
+  type Ticker,
+} from "@trading-dashboard/shared";
+import { type ConnectionStatus } from "types";
 
 export type MarketDataState = {
   tickers: Map<string, Ticker>;

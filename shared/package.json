@@ -2,12 +2,10 @@
   "name": "@trading-dashboard/shared",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*"
+    ".": "./src/types/index.ts"
   },
-  "types": "./src/index.ts",
+  "types": "./src/types/index.ts",
   "scripts": {
     "lint": "eslint .",
     "prettier": "prettier --write ."

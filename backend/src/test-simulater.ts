@@ -1,4 +1,4 @@
-import { MarketDataSimulator } from "./services/MarketDataSimulator";
+import { MarketDataSimulator } from "./services/MarketDataSimulator.js";
 
 const simulator = new MarketDataSimulator();
 

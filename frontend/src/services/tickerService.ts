@@ -1,7 +1,7 @@
 import {
-  Ticker,
-  HistoricalDataPoint,
-  ApiResponse,
+  type Ticker,
+  type HistoricalDataPoint,
+  type ApiResponse,
 } from "@trading-dashboard/shared";
 import { httpClient } from "utils";
 

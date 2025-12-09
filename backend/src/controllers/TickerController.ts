@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
-import { TickerService } from "../services/TickerService";
-import { ApiResponse } from "@trading-dashboard/shared";
+import { type Request, type Response } from "express";
+import { TickerService } from "../services/TickerService.js";
+import { type ApiResponse } from "@trading-dashboard/shared";
 
 export class TickerController {
   constructor(private tickerService: TickerService) {}
