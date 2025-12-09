@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "verbatimModuleSyntax": false, 
     "outDir": "./dist",
     "rootDir": "./src",
     "allowImportingTsExtensions": true,
