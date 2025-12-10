@@ -1,8 +1,11 @@
 import { Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "http";
-import { MarketDataSimulator } from "../services/MarketDataSimulator.js";
-import { TickerService } from "../services/TickerService.js";
-import { WsMessageType, type PriceUpdate } from "@trading-dashboard/shared";
+import {
+  WsMessageType,
+  type PriceUpdate,
+  type AlertSubscription,
+} from "@trading-dashboard/shared";
+import { MarketDataSimulator, AlertService, TickerService } from "../services";
 
 /**
  * SocketServer handles real-time WebSocket connections
@@ -14,6 +17,7 @@ export class SocketServer {
     httpServer: HTTPServer,
     private marketSimulator: MarketDataSimulator,
     private tickerService: TickerService,
+    private alertService: AlertService,
     corsOrigin: string,
   ) {
     // Initialize Socket.IO with CORS
@@ -66,8 +70,21 @@ export class SocketServer {
         });
       });
 
+      socket.on(
+        WsMessageType.SUBSCRIBE_ALERT,
+        (subscription: AlertSubscription) => {
+          try {
+            this.alertService.addAlert(socket.id, subscription);
+          } catch (error) {
+            console.error("Alert subscription failed:", error);
+            socket.emit("error", { message: "Failed to create alert" });
+          }
+        },
+      );
+
       // Handle disconnect
       socket.on("disconnect", () => {
+        this.alertService.removeAlertsForSocket(socket.id);
         console.log(`Client disconnected: ${socket.id}`);
       });
     });
@@ -88,6 +105,15 @@ export class SocketServer {
         );
 
         this.io.to(update.tickerId).emit(WsMessageType.PRICE_UPDATE, update);
+
+        const triggeredAlerts = this.alertService.checkAlerts(
+          update.tickerId,
+          update.price,
+        );
+
+        triggeredAlerts.forEach(({ socketId, alert }) => {
+          this.io.to(socketId).emit(WsMessageType.ALERT_TRIGGERED, alert);
+        });
       },
     );
   }

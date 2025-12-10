@@ -2,8 +2,7 @@ import express, { type Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { createServer } from "http";
-import { MarketDataSimulator } from "./services/MarketDataSimulator.js";
-import { TickerService } from "./services/TickerService.js";
+import { MarketDataSimulator, TickerService, AlertService } from "./services";
 import { SocketServer } from "./websocket/SocketServer.js";
 import { createTickerRoutes } from "./routes/tickerRoutes.js";
 
@@ -31,10 +30,17 @@ function bootstrap(): void {
 
   const tickerService = new TickerService();
   const marketSimulator = new MarketDataSimulator();
+  const alertService = new AlertService();
 
   app.use("/api/tickers", createTickerRoutes(tickerService));
 
-  new SocketServer(httpServer, marketSimulator, tickerService, CORS_ORIGIN);
+  new SocketServer(
+    httpServer,
+    marketSimulator,
+    tickerService,
+    alertService,
+    CORS_ORIGIN,
+  );
 
   marketSimulator.start();
 
