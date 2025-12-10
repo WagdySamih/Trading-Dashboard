@@ -3,3 +3,4 @@ export * from "./TrendingUp";
 export * from "./TrendingDown";
 export * from "./Menu";
 export * from "./XMark";
+export * from "./Alert";

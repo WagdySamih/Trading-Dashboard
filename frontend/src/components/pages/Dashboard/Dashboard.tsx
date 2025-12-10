@@ -8,8 +8,11 @@ import {
   PriceChartPanel,
   Header,
   IconButton,
+  Modal,
+  RadioButtonGroup,
+  Button,
 } from "components/common";
-import { useMarketData } from "./hooks";
+import { useCreateAlert, useMarketData } from "./hooks";
 import styles from "./Dashboard.module.scss";
 import { Menu, XMark } from "components/icons";
 
@@ -31,6 +34,17 @@ export default function Dashboard() {
     onToggleSidebar,
     isSidebarOpen,
   } = useMarketData();
+
+  const {
+    isModalOpen,
+    alertType,
+    alertPrice,
+    setIsModalOpen,
+    setAlertPrice,
+    setAlertType,
+    onNotify,
+    onConfirmCreateAlert,
+  } = useCreateAlert();
 
   const selectedTicker = selectedTickerId
     ? tickers.get(selectedTickerId) || null
@@ -71,6 +85,7 @@ export default function Dashboard() {
             tickers={filteredTickers}
             selectedTickerId={selectedTickerId}
             onSelectTicker={selectTicker}
+            onNotify={onNotify}
           />
         </aside>
         <section className={styles.section}>
@@ -86,6 +101,42 @@ export default function Dashboard() {
           <StatusIndicator status={connectionStatus} onReconnect={reconnect} />
         </section>
       </main>
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        className={styles.modal}
+      >
+        <h2>Price Alert</h2>
+        <RadioButtonGroup
+          options={[
+            { value: "lower", label: "Lower Than" },
+            { value: "higher", label: "Higher Than" },
+          ]}
+          value={alertType}
+          onChange={(o) => setAlertType(o)}
+        />
+
+        <div className={styles.inputWrapper}>
+          <span className={styles.currency}>$</span>
+          <input
+            type="number"
+            value={alertPrice}
+            onChange={(e) => setAlertPrice(e.target.value)}
+          />
+        </div>
+        <div className={styles.controls}>
+          <Button
+            text="Cancel"
+            variant="text"
+            onClick={() => setIsModalOpen(false)}
+          />
+          <Button
+            text="Confirm"
+            variant="primary"
+            onClick={onConfirmCreateAlert}
+          />
+        </div>
+      </Modal>
     </div>
   );
 }

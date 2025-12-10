@@ -1,19 +1,22 @@
 import React from "react";
 import { type Ticker } from "@trading-dashboard/shared";
-import { TrendingDown, TrendingUp } from "components/icons";
+import { Alert, TrendingDown, TrendingUp } from "components/icons";
 import { formatPercent, formatPrice } from "utils";
 import styles from "./TickerCard.module.scss";
+import { IconButton } from "../IconButton";
 
 type TickerCardProps = {
   ticker: Ticker;
   isSelected?: boolean;
   onClick: () => void;
+  onNotify: () => void;
 };
 
 const TickerCard: React.FC<TickerCardProps> = ({
   ticker,
   isSelected = false,
   onClick,
+  onNotify,
 }) => {
   const isPositive = ticker.changePercent >= 0;
   const priceDirection = isPositive ? "up" : "down";
@@ -52,7 +55,16 @@ const TickerCard: React.FC<TickerCardProps> = ({
         </div>
       </div>
 
-      <div className={styles.price}>{formatPrice(ticker.currentPrice)}</div>
+      <div className={styles.footer}>
+        <div className={styles.price}>{formatPrice(ticker.currentPrice)}</div>
+        <IconButton
+          icon={<Alert />}
+          onClick={(e) => {
+            e.stopPropagation();
+            onNotify();
+          }}
+        />
+      </div>
     </div>
   );
 };

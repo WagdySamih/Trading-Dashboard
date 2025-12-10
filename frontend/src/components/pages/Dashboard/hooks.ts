@@ -217,3 +217,30 @@ export function useMarketData(): UseMarketDataReturn {
     isSidebarOpen,
   };
 }
+
+export const useCreateAlert = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [alertType, setAlertType] = useState("higher");
+  const [alertPrice, setAlertPrice] = useState("");
+  const [selectedTickerId, setSelectedTickerId] = useState<string>();
+  const onConfirmCreateAlert = () => {
+    console.log(selectedTickerId);
+    // TODO: add create alert backend integration
+  };
+
+  const onNotify = (tickerId: string) => {
+    setIsModalOpen(true);
+    setSelectedTickerId(tickerId);
+  };
+
+  return {
+    isModalOpen,
+    alertType,
+    alertPrice,
+    setIsModalOpen,
+    setAlertPrice,
+    setAlertType,
+    onNotify,
+    onConfirmCreateAlert,
+  };
+};
