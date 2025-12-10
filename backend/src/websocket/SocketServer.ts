@@ -5,7 +5,11 @@ import {
   type PriceUpdate,
   type AlertSubscription,
 } from "@trading-dashboard/shared";
-import { MarketDataSimulator, AlertService, TickerService } from "../services";
+import {
+  MarketDataSimulator,
+  AlertService,
+  TickerService,
+} from "../services/index.js";
 
 /**
  * SocketServer handles real-time WebSocket connections

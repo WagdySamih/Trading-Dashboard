@@ -7,7 +7,7 @@ import {
   TickerService,
   AlertService,
   CacheService,
-} from "./services";
+} from "./services/index.js";
 import { SocketServer } from "./websocket/SocketServer.js";
 import { createTickerRoutes } from "./routes/tickerRoutes.js";
 
