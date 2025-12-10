@@ -18,3 +18,65 @@
     font-size: $mobile;
   }
 }
+
+@mixin fade-in(
+  $duration: 1s,
+  $delay: 0s,
+  $timing-function: ease-in-out,
+  $z-index-start: null,
+  $z-index-end: null
+) {
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      pointer-events: none;
+      @if $z-index-start != null {
+        z-index: $z-index-start;
+      }
+    }
+    100% {
+      opacity: 1;
+      pointer-events: auto;
+      @if $z-index-end != null {
+        z-index: $z-index-end;
+      }
+    }
+  }
+
+  animation: fadeIn $duration $delay $timing-function forwards;
+  pointer-events: auto;
+  @if $z-index-end != null {
+    z-index: $z-index-end;
+  }
+}
+
+@mixin fade-out(
+  $duration: 1s,
+  $delay: 0s,
+  $timing-function: ease-in-out,
+  $z-index-start: null,
+  $z-index-end: null
+) {
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      pointer-events: auto;
+      @if $z-index-start != null {
+        z-index: $z-index-start;
+      }
+    }
+    100% {
+      opacity: 0;
+      pointer-events: none;
+      @if $z-index-end != null {
+        z-index: $z-index-end;
+      }
+    }
+  }
+
+  animation: fadeOut $duration $delay $timing-function forwards;
+  pointer-events: none;
+  @if $z-index-end != null {
+    z-index: $z-index-end;
+  }
+}

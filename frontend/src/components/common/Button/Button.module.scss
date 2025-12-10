@@ -1,0 +1,48 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.btn {
+  flex: 1;
+  @include flex(row, center, center);
+  outline: none;
+  border: none;
+  font-size: 1rem;
+  gap: 0.5rem;
+  padding: 0.75rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1rem;
+
+  svg * {
+    transition: all 0.3s;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.primary {
+  background-color: $primary;
+  color: $white;
+}
+
+.outlined {
+  border: 1px solid $gray-300;
+  color: $gray-600;
+}
+
+.danger {
+  background-color: $error;
+  color: $white;
+}
+
+.text {
+  background-color: transparent;
+}

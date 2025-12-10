@@ -1,0 +1,56 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.container {
+  @include flex(row, space-evenly, center);
+  width: 100%;
+  gap: 1rem;
+}
+
+.item {
+  @include flex(row, center);
+  gap: 8px;
+  cursor: pointer;
+}
+
+.item input {
+  position: absolute;
+  opacity: 0;
+}
+
+.control {
+  @include flex(row, center, center);
+  width: 20px;
+  height: 20px;
+  border: 2px solid $gray-300;
+  border-radius: 50%;
+
+  transition: 0.2s ease;
+}
+
+.item:hover .control {
+  border-color: $primary;
+}
+
+.control::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: $primary;
+  transform: scale(0);
+  transition: 0.2s ease;
+}
+
+.item input:checked + .control {
+  border-color: $primary;
+}
+
+.item input:checked + .control::after {
+  transform: scale(1);
+}
+
+.label {
+  color: $gray-800;
+  font-size: 16px;
+}

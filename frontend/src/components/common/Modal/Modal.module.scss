@@ -1,0 +1,45 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.overlay {
+  @include flex(column, center, center);
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  inset: 0;
+  background: rgba($black, 0.6);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  z-index: 2;
+}
+
+.modal {
+  margin: auto;
+  padding: 1rem 3rem;
+  background: white;
+  border-radius: 20px;
+  border: 0;
+  z-index: 3;
+  overflow: auto;
+  @include fade-in(0.2s);
+  position: relative;
+
+  .x {
+    z-index: 100;
+    filter: grayscale(1);
+    border: none;
+    background: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    transition:
+      ease filter,
+      transform 0.15s;
+    transform-origin: center;
+    cursor: pointer;
+
+    &:hover {
+      filter: grayscale(0);
+    }
+  }
+}
