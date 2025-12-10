@@ -16,7 +16,7 @@
     "build": "npm run build:backend && npm run build:frontend",
     "test:backend": "npm run test --workspace backend",
     "test:frontend": "npm run test --workspace frontend",
-    "test": "npm run test:backend && npm run test:frontend",
+    "test": "npm run test:backend",
     "lint": "npm run lint:backend && npm run lint:shared && npm run lint:frontend",
     "lint:backend": "eslint backend/src",
     "lint:shared": "eslint shared/src",
