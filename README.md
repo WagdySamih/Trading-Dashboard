@@ -116,6 +116,18 @@ docker-compose up --build
 - **Frontend**: http://localhost:3000
 - **Backend**: http://localhost:3001
 
+## Quality Control
+
+This project enforces code quality and commit standards using **Husky** and **Lint-Staged**:
+
+- **Pre-commit**: Automatically runs `eslint` and `prettier` on staged files to ensure code style consistency.
+- **Commit-msg**: Enforces [Conventional Commits](https://www.conventionalcommits.org/) format using **Commitlint**.
+    - Example: `feat: add price alert feature`
+    - Example: `fix: resolve websocket race condition`
+- **Pre-push**: Ensures stability before pushing by:
+    - Running backend unit tests.
+    - verifying that the project builds successfully.
+
 ## Running Tests
 
 Unit tests are implemented for critical backend services using Jest.
