@@ -4,3 +4,6 @@ export * from "./TrendingDown";
 export * from "./Menu";
 export * from "./XMark";
 export * from "./Alert";
+export * from "./Error";
+export * from "./Success";
+export * from "./Warning";

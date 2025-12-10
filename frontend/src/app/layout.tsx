@@ -1,3 +1,5 @@
+import { Toast } from "components/common/Toast";
+import { ToastProvider } from "context";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "styles/global.scss";
@@ -25,8 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <div id="modal-root" />
-        {children}
+        <ToastProvider>
+          <div id="modal-root" />
+          <Toast />
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );

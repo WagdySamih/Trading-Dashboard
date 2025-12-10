@@ -1,0 +1,109 @@
+@import "styles/variables";
+@import "styles/mixins";
+@import "styles/media";
+
+.notificationContainer {
+  font-size: 14px;
+  position: fixed;
+  z-index: 999999;
+
+  .notification {
+    position: relative;
+    width: 400px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    background: $white;
+    border-radius: 12px;
+    opacity: 0.95;
+    box-shadow: 0 0 10px $gray-500;
+    transition: 0.3s ease;
+
+    @include breakpoint("phone-md") {
+      max-width: 300px;
+    }
+
+    &:hover {
+      box-shadow: 0 0 12px $white;
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    .content {
+      @include flex(row);
+      gap: 0.75rem;
+
+      .title {
+        font-weight: 600;
+        font-size: 18px;
+        text-transform: capitalize;
+        margin-bottom: 0.5rem;
+        color: $gray-700;
+      }
+
+      .message {
+        font-size: 14px;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: $gray-700;
+      }
+
+      .image {
+        margin-right: 15px;
+        img {
+          width: 30px;
+          height: 30px;
+          filter: invert(21%) sepia(3%) saturate(24%) hue-rotate(64deg)
+            brightness(100%) contrast(92%);
+        }
+      }
+    }
+
+    .close {
+      position: absolute;
+      outline: none;
+      border: none;
+      top: 10px;
+      right: 20px;
+      background-color: transparent;
+      color: $gray-700;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+
+      &:hover,
+      &:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .toast {
+    @include flex(row, space-between, center);
+    width: 400px;
+    padding: 0.5rem 1rem;
+  }
+}
+
+.topRight {
+  top: 0.75rem;
+  right: 0.75rem;
+  transition: transform 0.6s ease-in-out;
+  animation: toast-in-right 0.7s;
+}
+
+.x {
+  background-color: transparent;
+  border: none;
+}
+
+@keyframes toast-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

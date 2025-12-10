@@ -12,3 +12,4 @@ export * from "./IconButton";
 export * from "./Button";
 export * from "./Modal";
 export * from "./RadioButtonGroup";
+export * from "./Toast";
