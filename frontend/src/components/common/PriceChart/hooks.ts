@@ -43,6 +43,32 @@ export const usePriceChart = ({
     return `Last ${days} ${days === 1 ? "Day" : "Days"}`;
   };
 
+  const dateRangeInfo = useMemo(() => {
+    if (data.length === 0) return null;
+
+    const startDate = data[0].timestamp;
+    const endDate = data[data.length - 1].timestamp;
+    const diffInMs = endDate.getTime() - startDate.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+
+    let displayText = "";
+    if (diffInDays > 0) {
+      displayText = `${diffInDays} ${diffInDays === 1 ? "day" : "days"}`;
+    } else if (diffInHours > 0) {
+      displayText = `${diffInHours} ${diffInHours === 1 ? "hour" : "hours"}`;
+    } else {
+      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+      displayText = `${diffInMinutes} ${diffInMinutes === 1 ? "minute" : "minutes"}`;
+    }
+
+    return {
+      startDate,
+      endDate,
+      displayText,
+    };
+  }, [data]);
+
   const isPositiveTrend =
     data.length >= 2 && data[data.length - 1].price >= data[0].price;
   const lineColor = isPositiveTrend ? variables.success : variables.error;
@@ -54,5 +80,6 @@ export const usePriceChart = ({
     gradientId,
     isInitialMount,
     timeWindowLabel: timeWindow ? getTimeWindowLabel(timeWindow) : "",
+    dateRangeInfo,
   };
 };

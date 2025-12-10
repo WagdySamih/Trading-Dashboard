@@ -8,11 +8,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Loader } from "..";
-import { useWindowWidth } from "hooks"; // Add your import path
+import { useWindowWidth } from "hooks";
 import { usePriceChart } from "./hooks";
 import { type ChartDataPoint, type PriceChartProps } from "./types";
 import styles from "./PriceChart.module.scss";
-import variables from "styles/_variables";
 
 const PriceChart: React.FC<PriceChartProps> = ({
   data,
@@ -20,12 +19,18 @@ const PriceChart: React.FC<PriceChartProps> = ({
   isLoading = false,
   timeWindow,
 }) => {
-  const { chartData, lineColor, gradientId, isInitialMount, timeWindowLabel } =
-    usePriceChart({
-      data,
-      tickerSymbol,
-      timeWindow,
-    });
+  const {
+    chartData,
+    lineColor,
+    gradientId,
+    isInitialMount,
+    timeWindowLabel,
+    dateRangeInfo,
+  } = usePriceChart({
+    data,
+    tickerSymbol,
+    timeWindow,
+  });
 
   const windowWidth = useWindowWidth();
   const isMobile = windowWidth <= 750;
@@ -41,9 +46,9 @@ const PriceChart: React.FC<PriceChartProps> = ({
 
   if (isLoading) {
     return (
-      <div className={styles.container}>
-        <div className={styles.loading}>
-          <Loader message="Loading chart data..." />
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingContent}>
+          <Loader />
         </div>
       </div>
     );
@@ -52,8 +57,8 @@ const PriceChart: React.FC<PriceChartProps> = ({
   if (data.length === 0) {
     return (
       <div className={styles.container}>
-        <div className={styles.empty}>
-          <p>No historical data available</p>
+        <div className={styles.emptyState}>
+          <p className={styles.emptyStateText}>No historical data available</p>
         </div>
       </div>
     );
@@ -63,37 +68,55 @@ const PriceChart: React.FC<PriceChartProps> = ({
     <div className={styles.container}>
       {tickerSymbol && (
         <div className={styles.header}>
-          <h3 className={styles.title}>{tickerSymbol} Price History</h3>
-          <span className={styles.subtitle}>{timeWindowLabel}</span>
+          <div className={styles.titleContainer}>
+            <h3 className={styles.title}>{tickerSymbol} Price History</h3>
+            {timeWindowLabel && (
+              <span className={styles.timeWindow}>{timeWindowLabel}</span>
+            )}
+          </div>
+          {dateRangeInfo && (
+            <div className={styles.dateRange}>
+              {dateRangeInfo.startDate.toLocaleDateString()} -{" "}
+              {dateRangeInfo.endDate.toLocaleDateString()}
+              <span className={styles.rangeDuration}>
+                ({dateRangeInfo.displayText})
+              </span>
+            </div>
+          )}
         </div>
       )}
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={chartData} margin={chartMargins}>
+      <ResponsiveContainer width="100%" height={"100%"}>
+        <AreaChart data={chartData} margin={chartMargins} syncMethod="value">
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={lineColor} stopOpacity={0.3} />
               <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#e5e7eb"
-            opacity={isMobile ? 0.5 : 1}
-          />
+          <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
           <XAxis
-            dataKey="formattedTime"
-            stroke={variables.gray500}
-            fontSize={axisFontSize}
-            tickLine={false}
+            dataKey="timestamp"
+            type="number"
+            domain={["dataMin", "dataMax"]}
+            tickFormatter={(timestamp) => {
+              const date = new Date(timestamp);
+              return isMobile
+                ? date.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : date.toLocaleString([], {
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+            }}
             minTickGap={minTickGap}
-            angle={isMobile ? -45 : 0}
-            textAnchor={isMobile ? "end" : "middle"}
-            height={isMobile ? 60 : 30}
+            tick={{ fontSize: axisFontSize }}
           />
           <YAxis
-            stroke={variables.gray500}
-            fontSize={axisFontSize}
-            tickLine={false}
+            tick={{ fontSize: axisFontSize }}
             tickFormatter={(value) =>
               isMobile
                 ? `$${(value / 1000).toFixed(0)}k`
@@ -102,17 +125,26 @@ const PriceChart: React.FC<PriceChartProps> = ({
             domain={["auto", "auto"]}
             width={isMobile ? 40 : 60}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            content={<CustomTooltip />}
+            cursor={{
+              stroke: lineColor,
+              strokeWidth: 1,
+              strokeDasharray: "3 3",
+            }}
+            allowEscapeViewBox={{ x: false, y: true }}
+            isAnimationActive={false}
+          />
           <Area
             type="monotone"
             dataKey="price"
             stroke={lineColor}
             strokeWidth={strokeWidth}
             fill={`url(#${gradientId})`}
-            activeDot={{ r: activeDotRadius }}
+            animationDuration={isInitialMount.current ? 0 : 1000}
+            dot={false}
+            activeDot={{ r: activeDotRadius, fill: lineColor }}
             isAnimationActive={isInitialMount.current}
-            animationDuration={isInitialMount.current ? 1000 : 0}
-            animationEasing="ease-in-out"
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -123,16 +155,18 @@ const PriceChart: React.FC<PriceChartProps> = ({
 export default PriceChart;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload, coordinate }: any) => {
   if (!active || !payload || !payload.length) return null;
 
   const data = payload[0].payload as ChartDataPoint;
 
+  if (!coordinate) return null;
+
   return (
     <div className={styles.tooltip}>
-      <div className={styles.tooltipDate}>{data.formattedDate}</div>
-      <div className={styles.tooltipTime}>{data.formattedTime}</div>
-      <div className={styles.tooltipPrice}>${data.price.toFixed(2)}</div>
+      <p className={styles.date}>{data.formattedDate}</p>
+      <p className={styles.time}>{data.formattedTime}</p>
+      <p className={styles.price}>${data.price.toFixed(2)}</p>
     </div>
   );
 };
