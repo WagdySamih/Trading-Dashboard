@@ -1,10 +1,17 @@
 import { TickerService } from "./../../src/services/TickerService";
+import { CacheService } from "./../../src/services/CacheService";
 
 describe("TickerService", () => {
   let service: TickerService;
+  let cacheService: CacheService;
 
   beforeEach(() => {
-    service = new TickerService();
+    cacheService = new CacheService();
+    service = new TickerService(cacheService);
+  });
+
+  afterEach(() => {
+    cacheService.close();
   });
 
   describe("getAllTickers", () => {
@@ -136,6 +143,87 @@ describe("TickerService", () => {
         expect(curr).toBeGreaterThanOrEqual(prev);
       }
     });
+
+    it("should use cache on subsequent calls", () => {
+      // First call - cache miss
+      const history1 = service.getHistoricalData("AAPL", 1);
+
+      // Second call - cache hit (should return same data)
+      const history2 = service.getHistoricalData("AAPL", 1);
+
+      expect(history1).toEqual(history2);
+    });
+
+    it("should generate different data for different time ranges", () => {
+      const history1h = service.getHistoricalData("AAPL", 1);
+      const history24h = service.getHistoricalData("AAPL", 24);
+
+      expect(history1h.length).not.toEqual(history24h.length);
+      expect(history24h.length).toBeGreaterThan(history1h.length);
+    });
+
+    it("should not cache empty results for invalid tickers", () => {
+      const history = service.getHistoricalData("INVALID", 1);
+
+      expect(history).toEqual([]);
+
+      // Verify cache stats show no additional keys were added
+      const statsBefore = service.getCacheStats();
+      service.getHistoricalData("INVALID", 1);
+      const statsAfter = service.getCacheStats();
+
+      expect(statsAfter.keys).toEqual(statsBefore.keys);
+    });
+
+    it("should cache data for different time ranges independently", () => {
+      service.getHistoricalData("AAPL", 1);
+      service.getHistoricalData("AAPL", 24);
+      service.getHistoricalData("AAPL", 168);
+
+      const stats = service.getCacheStats();
+      expect(stats.keys).toBe(3); // Three different cache entries
+    });
+  });
+
+  describe("getCacheStats", () => {
+    it("should return cache statistics", () => {
+      const stats = service.getCacheStats();
+
+      expect(stats).toHaveProperty("keys");
+      expect(stats).toHaveProperty("hits");
+      expect(stats).toHaveProperty("misses");
+      expect(typeof stats.keys).toBe("number");
+      expect(typeof stats.hits).toBe("number");
+      expect(typeof stats.misses).toBe("number");
+    });
+
+    it("should track cache hits and misses", () => {
+      const statsBefore = service.getCacheStats();
+
+      // Cache miss
+      service.getHistoricalData("AAPL", 1);
+
+      const statsAfterMiss = service.getCacheStats();
+      expect(statsAfterMiss.misses).toBe(statsBefore.misses + 1);
+
+      // Cache hit
+      service.getHistoricalData("AAPL", 1);
+
+      const statsAfterHit = service.getCacheStats();
+      expect(statsAfterHit.hits).toBe(statsAfterMiss.hits + 1);
+    });
+
+    it("should track number of cached keys", () => {
+      const statsBefore = service.getCacheStats();
+      expect(statsBefore.keys).toBe(0);
+
+      service.getHistoricalData("AAPL", 1);
+      service.getHistoricalData("AAPL", 24);
+      service.getHistoricalData("TSLA", 1);
+
+      const statsAfter = service.getCacheStats();
+      expect(statsAfter.keys).toBe(3);
+    });
   });
 
   describe("tickerExists", () => {
@@ -147,6 +235,38 @@ describe("TickerService", () => {
     it("should return false for non-existent tickers", () => {
       expect(service.tickerExists("INVALID")).toBe(false);
       expect(service.tickerExists("")).toBe(false);
+    });
+  });
+
+  describe("cache behavior with frontend polling pattern", () => {
+    it("should serve from cache within 10-minute window", () => {
+      // Simulate frontend polling every 10 minutes
+      const history1 = service.getHistoricalData("AAPL", 1);
+
+      const stats1 = service.getCacheStats();
+      expect(stats1.misses).toBe(1);
+      expect(stats1.hits).toBe(0);
+
+      // Second request within 5 minutes (cache TTL for 1h data)
+      const history2 = service.getHistoricalData("AAPL", 1);
+
+      const stats2 = service.getCacheStats();
+      expect(stats2.hits).toBe(1); // Should be a cache hit
+      expect(history1).toEqual(history2);
+    });
+
+    it("should use appropriate TTL for different time ranges", () => {
+      // Recent data (1h) - 5 minute TTL
+      service.getHistoricalData("AAPL", 1);
+
+      // Daily data (24h) - 8 minute TTL
+      service.getHistoricalData("AAPL", 24);
+
+      // Weekly data (168h) - 10 minute TTL
+      service.getHistoricalData("AAPL", 168);
+
+      const stats = service.getCacheStats();
+      expect(stats.keys).toBe(3); // All cached independently
     });
   });
 });

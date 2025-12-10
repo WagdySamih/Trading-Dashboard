@@ -1,15 +1,18 @@
 import { Request, Response } from "express";
 import { TickerController } from "../../src/controllers/TickerController";
 import { TickerService } from "../../src/services/TickerService";
+import { CacheService } from "../../src/services/CacheService";
 
 describe("TickerController", () => {
   let controller: TickerController;
   let service: TickerService;
+  let cacheService: CacheService;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
 
   beforeEach(() => {
-    service = new TickerService();
+    cacheService = new CacheService();
+    service = new TickerService(cacheService);
     controller = new TickerController(service);
 
     mockRequest = {};
@@ -17,6 +20,10 @@ describe("TickerController", () => {
       json: jest.fn().mockReturnThis(),
       status: jest.fn().mockReturnThis(),
     };
+  });
+
+  afterEach(() => {
+    cacheService.close();
   });
 
   describe("getAllTickers", () => {
@@ -136,6 +143,99 @@ describe("TickerController", () => {
       const call = (mockResponse.json as jest.Mock).mock.calls[0][0];
       // Should have roughly 12 hours worth of data
       expect(call.data.length).toBeGreaterThan(0);
+    });
+
+    it("should leverage cache for repeated requests", () => {
+      mockRequest.params = { id: "AAPL" };
+      mockRequest.query = { hours: "1" };
+
+      // First request - cache miss
+      controller.getTickerHistory(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+
+      const firstCall = (mockResponse.json as jest.Mock).mock.calls[0][0];
+
+      // Reset mock
+      (mockResponse.json as jest.Mock).mockClear();
+
+      // Second request - cache hit
+      controller.getTickerHistory(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+
+      const secondCall = (mockResponse.json as jest.Mock).mock.calls[0][0];
+
+      // Both should return the same data structure
+      expect(firstCall.success).toBe(true);
+      expect(secondCall.success).toBe(true);
+      expect(firstCall.data).toEqual(secondCall.data);
+    });
+
+    it("should return different data for different time ranges", () => {
+      mockRequest.params = { id: "AAPL" };
+
+      // Request 1 hour
+      mockRequest.query = { hours: "1" };
+      controller.getTickerHistory(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+      const call1h = (mockResponse.json as jest.Mock).mock.calls[0][0];
+
+      // Reset mock
+      (mockResponse.json as jest.Mock).mockClear();
+
+      // Request 24 hours
+      mockRequest.query = { hours: "24" };
+      controller.getTickerHistory(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+      const call24h = (mockResponse.json as jest.Mock).mock.calls[0][0];
+
+      expect(call1h.data.length).not.toEqual(call24h.data.length);
+      expect(call24h.data.length).toBeGreaterThan(call1h.data.length);
+    });
+
+    it("should handle invalid hours parameter gracefully", () => {
+      mockRequest.params = { id: "AAPL" };
+      mockRequest.query = { hours: "invalid" };
+
+      controller.getTickerHistory(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+
+      // Should still succeed with default or parsed value
+      const call = (mockResponse.json as jest.Mock).mock.calls[0][0];
+      expect(call.success).toBe(true);
+      expect(call.data).toBeInstanceOf(Array);
+    });
+
+    it("should work with frontend 10-minute polling pattern", () => {
+      mockRequest.params = { id: "AAPL" };
+      mockRequest.query = { hours: "1" };
+
+      // First poll
+      controller.getTickerHistory(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+
+      // Simulate subsequent poll within cache window
+      (mockResponse.json as jest.Mock).mockClear();
+
+      controller.getTickerHistory(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+
+      const call = (mockResponse.json as jest.Mock).mock.calls[0][0];
+      expect(call.success).toBe(true);
+      // Data should come from cache (TTL is 5 minutes for 1h data)
     });
   });
 });

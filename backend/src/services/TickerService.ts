@@ -3,6 +3,7 @@ import {
   type HistoricalDataPoint,
 } from "@trading-dashboard/shared";
 import { INITIAL_TICKERS } from "../models/Ticker.js";
+import { CacheService } from "./CacheService.js";
 
 /**
  * TickerService handles business logic for tickers
@@ -11,8 +12,10 @@ import { INITIAL_TICKERS } from "../models/Ticker.js";
 export class TickerService {
   private tickers: Map<string, Ticker> = new Map();
   private basePrices: Map<string, number> = new Map();
+  private cacheService: CacheService;
 
-  constructor() {
+  constructor(cacheService: CacheService) {
+    this.cacheService = cacheService;
     this.initializeTickers();
   }
 
@@ -66,12 +69,40 @@ export class TickerService {
   }
 
   /**
-   * Generate mock historical data for a ticker
-   * In real app, this would query a database
+   * Get historical data with caching
+   * Checks cache first, generates if cache miss
    */
   getHistoricalData(
     tickerId: string,
     hours: number = 1,
+  ): HistoricalDataPoint[] {
+    // Check cache first
+    const cachedData = this.cacheService.get(tickerId, hours);
+    if (cachedData) {
+      console.log(`Cache hit for ${tickerId} (${hours}h)`);
+      return cachedData;
+    }
+
+    console.log(`Cache miss for ${tickerId} (${hours}h) - generating data`);
+
+    // Generate data on cache miss
+    const data = this.generateHistoricalData(tickerId, hours);
+
+    // Store in cache
+    if (data.length > 0) {
+      this.cacheService.set(tickerId, hours, data);
+    }
+
+    return data;
+  }
+
+  /**
+   * Generate mock historical data for a ticker
+   * In real app, this would query a database
+   */
+  private generateHistoricalData(
+    tickerId: string,
+    hours: number,
   ): HistoricalDataPoint[] {
     const ticker = this.tickers.get(tickerId);
     if (!ticker) return [];
@@ -94,6 +125,12 @@ export class TickerService {
     }
 
     return dataPoints;
+  }
+  /**
+   * Get cache statistics
+   */
+  getCacheStats() {
+    return this.cacheService.getStats();
   }
 
   private getIntervalForHours(hours: number): number {
@@ -121,6 +158,7 @@ export class TickerService {
 
     return Math.floor((Math.random() * baseVolume + baseVolume) * multiplier);
   }
+
   /**
    * Check if ticker exists
    */
