@@ -39,6 +39,7 @@ export const WsMessageType = {
   UNSUBSCRIBE: "UNSUBSCRIBE",
   PRICE_UPDATE: "PRICE_UPDATE",
   SUBSCRIBE_ALERT: "SUBSCRIBE_ALERT",
+  UNSUBSCRIBE_ALERT: "UNSUBSCRIBE_ALERT",
   ALERT_TRIGGERED: "ALERT_TRIGGERED",
   ERROR: "ERROR",
 } as const;
@@ -64,12 +65,14 @@ export interface PriceUpdateMessage extends WsMessage {
 }
 
 export interface AlertSubscription {
+  id: string;
   tickerId: string;
   price: number;
   type: "lower" | "higher";
 }
 
 export interface AlertTriggered {
+  id: string;
   tickerId: string;
   price: number;
   alertPrice: number;

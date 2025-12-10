@@ -52,6 +52,7 @@ export class AlertService {
         triggeredAlerts.push({
           socketId: alert.socketId,
           alert: {
+            id: `${Date.now()}-${tickerId}-${Math.random()}`,
             tickerId,
             price: currentPrice,
             alertPrice: alert.price,
