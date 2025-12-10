@@ -60,7 +60,7 @@ export default function Dashboard() {
         <div className={styles.errorCard}>
           <h2>Error Loading Data</h2>
           <p>{error}</p>
-          <button onClick={() => window.location.reload()}>Retry</button>
+          <Button onClick={() => window.location.reload()} text={"Retry"} />
         </div>
       </div>
     );
