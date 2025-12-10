@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { type PriceUpdate } from "@trading-dashboard/shared";
-import { wsService, tickerService } from "services";
+import { wsService, tickerService, alertService } from "services";
 import { type ConnectionStatus } from "types";
 import { type MarketDataState, type UseMarketDataReturn } from "./types";
 import { useWindowWidth } from "hooks";
+import { useToast } from "context";
 
 const CONFIG = {
   MAX_CHART_POINTS: 2500,
@@ -223,10 +224,52 @@ export const useCreateAlert = () => {
   const [alertType, setAlertType] = useState("higher");
   const [alertPrice, setAlertPrice] = useState("");
   const [selectedTickerId, setSelectedTickerId] = useState<string>();
+  const { toast } = useToast();
+
+  const activeAlertsRef = useRef<Set<string>>(new Set());
+
   const onConfirmCreateAlert = () => {
-    console.log(selectedTickerId);
-    // TODO: add create alert backend integration
+    if (!selectedTickerId || !alertPrice) return;
+
+    const alertId = `${Date.now()}-${selectedTickerId}-${Math.random()}`;
+
+    try {
+      alertService.subscribe({
+        id: alertId,
+        tickerId: selectedTickerId,
+        price: parseFloat(alertPrice),
+        type: alertType as "lower" | "higher",
+      });
+
+      activeAlertsRef.current.add(alertId);
+
+      toast.success({
+        message: `Price Alert is set for ${selectedTickerId} successfully`,
+      });
+      setIsModalOpen(false);
+      setAlertPrice("");
+    } catch (e) {
+      toast.error({ message: e as string });
+    }
   };
+
+  useEffect(() => {
+    alertService.onAlertTriggered((alert) => {
+      activeAlertsRef.current.delete(alert.id);
+
+      toast.warning({
+        title: "Price Alert",
+        message: `${alert.tickerId} is ${alert.type} than $${alert.alertPrice}\nCurrent Price: $${alert.price}`,
+      });
+    });
+
+    return () => {
+      activeAlertsRef.current.forEach((alertId) => {
+        alertService.unsubscribe(alertId);
+      });
+      activeAlertsRef.current.clear();
+    };
+  }, [toast]);
 
   const onNotify = (tickerId: string) => {
     setIsModalOpen(true);
