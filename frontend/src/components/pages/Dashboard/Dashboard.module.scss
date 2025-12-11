@@ -12,7 +12,6 @@
 .main {
   @include flex(row);
   flex-wrap: nowrap;
-  padding: 1rem 0;
   position: relative;
   height: calc(100vh - 60px);
   overflow: hidden;
