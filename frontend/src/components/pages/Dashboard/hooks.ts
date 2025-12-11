@@ -42,7 +42,6 @@ export function useMarketData(): UseMarketDataReturn {
 
       if (!ticker) return prev;
 
-      // Update ticker price
       newTickers.set(update.tickerId, {
         ...ticker,
         currentPrice: update.price,
@@ -51,7 +50,6 @@ export function useMarketData(): UseMarketDataReturn {
         lastUpdate: update.timestamp,
       });
 
-      // Append to chart only if viewing selected ticker with short time window
       const shouldAppendToChart =
         update.tickerId === prev.selectedTickerId &&
         prev.currentTimeWindow <= CONFIG.LIVE_UPDATE_THRESHOLD;
@@ -99,7 +97,21 @@ export function useMarketData(): UseMarketDataReturn {
     async (tickerId: string, hours: number) => {
       try {
         const data = await tickerService.getHistoricalData(tickerId, hours);
-        setState((prev) => ({ ...prev, historicalData: data }));
+        setState((prev) => {
+          // If we have existing data points that are newer than the fetched historical data,
+          // we need to preserve them (they're live updates that arrived during the fetch)
+          const latestHistoricalTimestamp =
+            data.length > 0 ? data[data.length - 1].timestamp : 0;
+
+          const liveUpdates = prev.historicalData.filter(
+            (point) => point.timestamp > latestHistoricalTimestamp,
+          );
+
+          return {
+            ...prev,
+            historicalData: [...data, ...liveUpdates],
+          };
+        });
       } catch (error) {
         console.error("Failed to fetch historical data:", error);
         setState((prev) => ({
@@ -111,14 +123,10 @@ export function useMarketData(): UseMarketDataReturn {
     [],
   );
 
-  // Filter tickers based on search query
   const filteredTickers = useMemo(() => {
     const allTickers = Array.from(state.tickers.values());
 
-    // If search is empty, return all tickers
-    if (!searchQuery.trim()) {
-      return allTickers;
-    }
+    if (!searchQuery.trim()) return allTickers;
 
     const query = searchQuery.toLowerCase().trim();
 
@@ -133,7 +141,6 @@ export function useMarketData(): UseMarketDataReturn {
     setSearchQuery(query);
   }, []);
 
-  // Initialize: Load tickers and connect WebSocket
   useEffect(() => {
     if (!isInitialMount.current) return;
     isInitialMount.current = false;
@@ -174,13 +181,11 @@ export function useMarketData(): UseMarketDataReturn {
     };
   }, [handlePriceUpdate, handleStatusChange]);
 
-  // Fetch historical data when ticker or time window changes
   useEffect(() => {
     if (!state.selectedTickerId) return;
     fetchHistoricalData(state.selectedTickerId, state.currentTimeWindow);
   }, [state.selectedTickerId, state.currentTimeWindow, fetchHistoricalData]);
 
-  // Public API
   const selectTicker = useCallback((tickerId: string) => {
     setState((prev) => ({
       ...prev,

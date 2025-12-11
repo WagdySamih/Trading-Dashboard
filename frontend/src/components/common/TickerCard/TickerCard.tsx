@@ -24,13 +24,15 @@ const TickerCard: React.FC<TickerCardProps> = ({
   return (
     <div
       className={`${styles.card} ${isSelected ? styles.selected : ""}`}
-      onClick={onClick}
+      onClick={() => {
+        if (!isSelected) onClick();
+      }}
       role={"button"}
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          onClick();
+          if (!isSelected) onClick();
         }
       }}
     >
