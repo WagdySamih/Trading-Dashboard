@@ -174,17 +174,27 @@ Base URL: `http://localhost:3001/api`
 trading-dashboard/
 ├── backend/                # Express server & Business logic
 │   ├── src/
-│   │   ├── controllers/    # Request handlers
+│   │   ├── controllers/    # Request handlers (TickerController)
 │   │   ├── services/       # Core business logic (Ticker, Alert, Cache)
 │   │   ├── websocket/      # Socket.IO handlers
-│   │   └── models/         # Data models and seed data
+│   │   ├── models/         # Data models and seed data
+│   │   └── routes/         # Express routes
 │   └── tests/              # Jest unit tests
 ├── frontend/               # Next.js Application
 │   ├── src/
+│   │   ├── app/            # Next.js 13+ App Directory
 │   │   ├── components/     # React components
+│   │   │   ├── common/     # Reusable UI components (Button, Modal, etc.)
+│   │   │   ├── icons/      # SVG Icons
+│   │   │   └── pages/      # Page-specific components
+│   │   ├── context/        # Global state (Toast, Theme)
 │   │   ├── services/       # API & WebSocket clients
-│   │   └── context/        # Global state (Toast, Theme)
-└── shared/                 # Shared Types & interfaces
+│   │   ├── hooks/          # Custom React hooks (useWindowWidth, etc.)
+│   │   ├── utils/          # Helper functions (formatters)
+│   │   ├── types/          # Frontend-specific types
+│   │   ├── styles/         # Global styles and CSS modules
+│   │   └── enums/          # Frontend enums
+└── shared/                 # Shared Types & interfaces workspace
 ```
 
 ## Performance & Architecture
