@@ -32,7 +32,7 @@ class WebSocketService {
     this.priceUpdateCallback = onPriceUpdate;
     this.statusCallback = onStatusChange;
 
-    const wsUrl = process.env.WS_URL || "http://localhost:3001";
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3001";
 
     this.socket = io(wsUrl, {
       transports: ["websocket", "polling"],
