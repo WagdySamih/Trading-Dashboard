@@ -46,10 +46,8 @@ const PriceChart: React.FC<PriceChartProps> = ({
 
   if (isLoading) {
     return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loadingContent}>
-          <Loader />
-        </div>
+      <div className={styles.loading}>
+        <Loader message="Loading chart data..." />
       </div>
     );
   }
