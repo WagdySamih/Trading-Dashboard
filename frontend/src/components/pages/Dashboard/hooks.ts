@@ -186,13 +186,19 @@ export function useMarketData(): UseMarketDataReturn {
     fetchHistoricalData(state.selectedTickerId, state.currentTimeWindow);
   }, [state.selectedTickerId, state.currentTimeWindow, fetchHistoricalData]);
 
-  const selectTicker = useCallback((tickerId: string) => {
-    setState((prev) => ({
-      ...prev,
-      selectedTickerId: tickerId,
-      historicalData: [],
-    }));
-  }, []);
+  const selectTicker = useCallback(
+    (tickerId: string) => {
+      const isTablet = windowWidth <= 750;
+      if (isTablet) setIsSidebarOpen(false);
+
+      setState((prev) => ({
+        ...prev,
+        selectedTickerId: tickerId,
+        historicalData: [],
+      }));
+    },
+    [windowWidth],
+  );
 
   const onChangeTimeWindow = useCallback((hours: number) => {
     setState((prev) => ({
