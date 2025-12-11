@@ -11,5 +11,6 @@
 
   @include breakpoint("tablet") {
     @include flex(row, center, center);
+    padding: 0.5rem 1rem;
   }
 }
