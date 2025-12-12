@@ -75,7 +75,7 @@ The project is deployed and automatically updated via **Railway CI/CD**:
     **Frontend** (`frontend/.env.local`):
     ```env
     NEXT_PUBLIC_API_URL=http://localhost:3001
-    WS_URL=http://localhost:3001
+    NEXT_PUBLIC_WS_URL=http://localhost:3001
     ```
 
 ## Running the Application
